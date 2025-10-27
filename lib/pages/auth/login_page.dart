@@ -47,6 +47,9 @@ class _LoginPageState extends State<LoginPage> {
                         if (value == null || value.isEmpty) {
                           return "Please enter your email address";
                         }
+                        if (!value.contains('@') && !value.contains('.')) {
+                          return "Invalid email address";
+                        }
                         return null;
                       },
                     ),
@@ -60,6 +63,9 @@ class _LoginPageState extends State<LoginPage> {
                         if (value == null || value.isEmpty) {
                           return "Please enter the password";
                         }
+                        if (value.length < 6) {
+                          return "Weak password";
+                        }
                         return null;
                       },
                     ),
@@ -69,8 +75,12 @@ class _LoginPageState extends State<LoginPage> {
                         final SharedPreferences sharedPrefs = await SharedPreferences.getInstance();
                         final savedEmail = sharedPrefs.getString('email');
                         final savedPassword = sharedPrefs.getString('password');
-                        if (savedEmail == _emailController.text.trim() && savedPassword == _passwordController.text.trim()) {
-                          Navigator.pushNamed(context, "/homePage");
+                        if (_formKey.currentState!.validate()) {
+                          if (savedEmail == _emailController.text.trim() && savedPassword == _passwordController.text.trim()) {
+                            Navigator.pushNamed(context, "/homePage");
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('User does not exist')));
+                          }
                         }
                       },
                       text: 'Login',
